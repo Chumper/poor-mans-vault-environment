@@ -4,10 +4,10 @@ before:
     - go mod tidy
 dockers:
   - image_templates:
-      - "chumper/pmve:{{ .Tag }}"
-      - "chumper/pmve:v{{ .Major }}"
-      - "chumper/pmve:v{{ .Major }}.{{ .Minor }}"
-      - "chumper/pmve:latest"
+      - "ghcr.io/chumper/pmve:{{ .Tag }}"
+      - "ghcr.io/chumper/pmve:v{{ .Major }}"
+      - "ghcr.io/chumper/pmve:v{{ .Major }}.{{ .Minor }}"
+      - "ghcr.io/chumper/pmve:latest"
 builds:
   - env:
       - CGO_ENABLED=0
