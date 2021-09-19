@@ -144,6 +144,7 @@ func ReplaceEnvironment(client *api.Client) {
 			secretValue, ok := content[vaultKey].(string)
 			if ok {
 				os.Setenv(envKey, secretValue)
+				fmt.Printf("pmve: replacing vaule for %s\n", envKey)
 			} else {
 				fmt.Printf("Could not decode secret: Field not found\n")
 				os.Exit(1)
