@@ -8,10 +8,11 @@ import (
 )
 
 func TestCreateConfig(t *testing.T) {
-	os.Setenv("VAULT_ROLE_ID", "123")
-	os.Setenv("VAULT_SECRET_ID", "123")
-	os.Setenv("PMVE_KEEP_SECRETS", "true")
-	os.Setenv("VAULT_ADDR", "123")
+	os.Setenv(VAULT_ROLE_ID, "123")
+	os.Setenv(VAULT_SECRET_ID, "123")
+	os.Setenv(PMVE_KEEP_SECRETS, "true")
+	os.Setenv(PMVE_DEBUG, "true")
+	os.Setenv(VAULT_ADDR, "123")
 
 	config := CreateConfig()
 
@@ -19,12 +20,15 @@ func TestCreateConfig(t *testing.T) {
 	assert.Equal(t, "123", config.vaultSecretId)
 	assert.Equal(t, "123", config.vaultAddr)
 	assert.Equal(t, true, config.keepSecrets)
+	assert.Equal(t, true, config.debug)
 }
 
 func TestCreateConfigWithToken(t *testing.T) {
-	os.Setenv("VAULT_TOKEN", "123")
-	os.Setenv("PMVE_KEEP_SECRETS", "true")
-	os.Setenv("VAULT_ADDR", "123")
+	os.Setenv(VAULT_TOKEN, "123")
+	os.Setenv(PMVE_KEEP_SECRETS, "true")
+	os.Setenv(VAULT_ADDR, "123")
+	os.Unsetenv(VAULT_ROLE_ID)
+	os.Unsetenv(VAULT_SECRET_ID)
 
 	config := CreateConfig()
 
@@ -33,6 +37,7 @@ func TestCreateConfigWithToken(t *testing.T) {
 	assert.Equal(t, "123", config.vaultAddr)
 	assert.Equal(t, "123", config.vaultToken)
 	assert.Equal(t, true, config.keepSecrets)
+	assert.Equal(t, true, config.debug)
 }
 
 func TestSetupEnvironment(t *testing.T) {
@@ -42,6 +47,7 @@ func TestSetupEnvironment(t *testing.T) {
 		vaultRoleId:   "123",
 		vaultSecretId: "123",
 		vaultToken:    "123",
+		debug:         true,
 	}
 
 	SetupEnvironment(config)

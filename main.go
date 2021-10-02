@@ -17,6 +17,7 @@ import (
 const (
 	defaultVaultAddr    string = "http://localhost:8200"
 	defaultKeepSecrets  bool   = false
+	defaultDebug        bool   = false
 	vaultEnvironmentKey string = "vault:"
 	// environment variables
 	VAULT_ADDR        string = "VAULT_ADDR"
@@ -24,6 +25,7 @@ const (
 	VAULT_SECRET_ID   string = "VAULT_SECRET_ID"
 	VAULT_TOKEN       string = "VAULT_TOKEN"
 	PMVE_KEEP_SECRETS string = "PMVE_KEEP_SECRETS"
+	PMVE_DEBUG        string = "PMVE_DEBUG"
 )
 
 type Config struct {
@@ -32,6 +34,7 @@ type Config struct {
 	vaultSecretId string
 	vaultToken    string
 	keepSecrets   bool
+	debug         bool
 	httpClient    *http.Client
 }
 
@@ -48,7 +51,7 @@ func main() {
 	client := CreateVaultClient(config)
 
 	SetupEnvironment(config)
-	ReplaceEnvironment(client)
+	ReplaceEnvironment(client, config.debug)
 
 	ReplaceProcess()
 }
@@ -113,7 +116,7 @@ func SetupEnvironment(config *Config) {
 	}
 }
 
-func ReplaceEnvironment(client *api.Client) {
+func ReplaceEnvironment(client *api.Client, debug bool) {
 
 	// loop over env vars and check for vault urn vault:/path/to/secret:field_to_read
 	for _, element := range os.Environ() {
@@ -144,7 +147,9 @@ func ReplaceEnvironment(client *api.Client) {
 			secretValue, ok := content[vaultKey].(string)
 			if ok {
 				os.Setenv(envKey, secretValue)
-				fmt.Printf("pmve: replacing vaule for %s\n", envKey)
+				if debug {
+					fmt.Printf("pmve: replacing vaule for %s\n", envKey)
+				}
 			} else {
 				fmt.Printf("Could not decode secret: Field not found\n")
 				os.Exit(1)
@@ -159,6 +164,7 @@ func ParseEnv(config *Config) {
 	config.vaultRoleId = LookupEnvOrString(VAULT_ROLE_ID, "")
 	config.vaultSecretId = LookupEnvOrString(VAULT_SECRET_ID, "")
 	config.keepSecrets = LookupEnvOrBool(PMVE_KEEP_SECRETS, defaultKeepSecrets)
+	config.debug = LookupEnvOrBool(PMVE_DEBUG, defaultDebug)
 }
 
 func LookupEnvOrString(key string, defaultVal string) string {
